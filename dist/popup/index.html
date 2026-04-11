@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hover Translator</title>
+  <script type="module" crossorigin src="/popup.js"></script>
+  <link rel="modulepreload" crossorigin href="/shared/types.js">
+  <link rel="stylesheet" crossorigin href="/popup.css">
+</head>
+<body>
+  <!-- Header -->
+  <div class="header">
+    <span class="header-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="2" y1="12" x2="22" y2="12"/>
+        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+      </svg>
+    </span>
+    <span class="header-title">Hover Translator</span>
+    <div class="header-actions">
+      <button class="icon-btn" id="theme-btn" title="Toggle light/dark mode">🌙</button>
+      <button class="icon-btn" id="settings-btn" title="Settings">⚙️</button>
+    </div>
+  </div>
+
+  <!-- Sliding panels -->
+  <div class="panels" id="panels">
+
+    <!-- Panel 1: Main -->
+    <div class="panel">
+      <div class="body">
+
+        <!-- Per-site toggle -->
+        <div class="row site-row">
+          <span class="site-domain" id="site-domain">…</span>
+          <div class="site-controls">
+            <button class="site-reset-btn" id="site-reset" title="Reset to default" style="display:none;">↺</button>
+            <label class="switch">
+              <input type="checkbox" id="site-enabled" checked />
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <div class="row">
+          <span class="label">Source</span>
+          <button class="direction-btn" id="toggle-source-mode">Fixed</button>
+        </div>
+
+        <!-- Fixed mode: source and target language pickers -->
+        <div class="row" id="row-fixed-langs">
+          <span class="label">From</span>
+          <select id="source-lang" class="inline-select inline-select--wide"></select>
+        </div>
+        <div class="row" id="row-target-lang">
+          <span class="label">To</span>
+          <select id="target-lang" class="inline-select inline-select--wide"></select>
+        </div>
+
+        <!-- Auto mode: only target language picker -->
+        <div class="row" id="row-auto-target" style="display:none;">
+          <span class="label">Translate to</span>
+          <select id="auto-target-lang" class="inline-select inline-select--wide"></select>
+        </div>
+
+        <div class="row" id="row-two-way">
+          <span class="label">Two-way</span>
+          <label class="switch">
+            <input type="checkbox" id="two-way" />
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="row">
+          <span class="label">Mode</span>
+          <button class="direction-btn" id="toggle-mode">Word</button>
+        </div>
+
+        <div class="row">
+          <span class="label">Translate selection</span>
+          <label class="switch">
+            <input type="checkbox" id="selection-enabled" checked />
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="row">
+          <span class="label">Smart skip</span>
+          <label class="switch">
+            <input type="checkbox" id="smart-skip" checked />
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="row">
+          <span class="label">Show original text</span>
+          <label class="switch">
+            <input type="checkbox" id="show-both-texts" />
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <hr class="divider" />
+
+        <div class="shortcuts">
+          <div class="shortcut-row">
+            <kbd id="hint-trigger">Alt</kbd>
+            <span>On-demand translate</span>
+          </div>
+          <div class="shortcut-row">
+            <kbd id="hint-pin">Alt+P</kbd>
+            <span>Pin / unpin tooltip</span>
+          </div>
+          <div class="shortcut-row">
+            <kbd id="hint-dismiss">Esc</kbd>
+            <span>Dismiss pinned tooltip</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel 2: Settings -->
+    <div class="panel">
+      <div class="settings-header">
+        <button class="back-btn" id="back-btn" title="Back">←</button>
+        <span class="settings-title">Settings</span>
+      </div>
+      <div class="settings-body">
+
+        <!-- Default Behavior -->
+        <div>
+          <div class="settings-group-label">Default Behavior</div>
+          <div class="radio-group">
+            <label class="radio-option">
+              <input type="radio" name="default-behavior" value="on" />
+              <span class="radio-dot"></span>
+              <span class="radio-label">On by default</span>
+            </label>
+            <label class="radio-option">
+              <input type="radio" name="default-behavior" value="language" />
+              <span class="radio-dot"></span>
+              <span class="radio-label">On for pages in</span>
+              <select id="target-language" class="inline-select"></select>
+            </label>
+            <label class="radio-option">
+              <input type="radio" name="default-behavior" value="off" />
+              <span class="radio-dot"></span>
+              <span class="radio-label">Off by default</span>
+            </label>
+          </div>
+        </div>
+
+        <hr class="divider" />
+
+        <!-- Shortcuts -->
+        <div>
+          <div class="settings-group-label">Keyboard Shortcuts</div>
+          <div class="shortcut-edit-row" style="margin-top:8px;">
+            <span class="shortcut-edit-label">On-demand key</span>
+            <button class="shortcut-capture-btn" id="capture-trigger" data-key="triggerModifier">Alt</button>
+          </div>
+          <div class="shortcut-edit-row" style="margin-top:8px;">
+            <span class="shortcut-edit-label">Pin / unpin key</span>
+            <button class="shortcut-capture-btn" id="capture-pin" data-key="pinKey">P</button>
+          </div>
+          <div class="shortcut-edit-row" style="margin-top:8px;">
+            <span class="shortcut-edit-label">Dismiss key</span>
+            <button class="shortcut-capture-btn" id="capture-dismiss" data-key="dismissKey">Escape</button>
+          </div>
+          <p class="settings-hint" style="margin-top:6px;">
+            Click a button, then press the key.<br/>On-demand key must be a modifier.
+          </p>
+        </div>
+
+        <hr class="divider" />
+
+        <!-- Grammar View -->
+        <div>
+          <div class="settings-group-label">Grammar View</div>
+          <div class="row">
+            <span class="label">Show grammar overlay</span>
+            <label class="switch">
+              <input type="checkbox" id="grammar-mode" />
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div class="appearance-row" id="row-grammar-position" style="margin-top:6px;">
+            <span class="appearance-label">Legend</span>
+            <select id="grammar-position" class="font-select">
+              <option value="top">Top</option>
+              <option value="bottom">Bottom</option>
+              <option value="side">Side</option>
+            </select>
+          </div>
+          <p class="settings-hint" style="margin-top:6px;">
+            Sentence mode. Supported: English, German, Spanish, French, Japanese.<br/>
+            Colors words by grammatical role.
+          </p>
+        </div>
+
+        <hr class="divider" />
+
+        <!-- Translation Engines -->
+        <div>
+          <div class="settings-group-label">Translation Engines</div>
+          <div class="shortcut-edit-row" style="margin-top:8px;">
+            <span class="shortcut-edit-label">Engine</span>
+            <select id="preferred-engine" class="font-select">
+              <option value="auto">Auto (fallback chain)</option>
+              <option value="chrome">Chrome AI (on-device)</option>
+              <option value="mymemory">MyMemory</option>
+              <option value="lingva">Lingva (Google proxy)</option>
+              <option value="libretranslate">LibreTranslate</option>
+              <option value="deepl">DeepL</option>
+            </select>
+          </div>
+          <p class="settings-hint" style="margin-top:6px;margin-bottom:8px;" id="engine-hint">Auto tries Chrome AI first, then MyMemory, Lingva, and configured fallbacks.</p>
+          <div class="shortcut-edit-row" id="row-mymemory-email">
+            <span class="shortcut-edit-label">MyMemory email</span>
+            <input type="email" id="mymemory-email" class="text-input" placeholder="you@example.com (10× limit)" />
+          </div>
+          <div class="shortcut-edit-row" style="margin-top:8px;" id="row-lingva-url">
+            <span class="shortcut-edit-label">Lingva URL</span>
+            <input type="url" id="lingva-url" class="text-input" placeholder="https://lingva.ml" />
+          </div>
+          <div class="shortcut-edit-row" style="margin-top:8px;" id="row-libre-url">
+            <span class="shortcut-edit-label">LibreTranslate URL</span>
+            <input type="url" id="libretranslate-url" class="text-input" placeholder="https://…" />
+          </div>
+          <div class="shortcut-edit-row" style="margin-top:8px;" id="row-deepl-key">
+            <span class="shortcut-edit-label">DeepL Free key</span>
+            <input type="password" id="deepl-key" class="text-input" placeholder="Optional" />
+          </div>
+        </div>
+
+        <hr class="divider" />
+
+        <!-- Tooltip Appearance -->
+        <div>
+          <div class="settings-group-label">Tooltip Appearance</div>
+          <div class="appearance-row" style="margin-top:8px;">
+            <span class="appearance-label">Font size</span>
+            <div class="range-group">
+              <input type="range" id="font-size" min="11" max="22" step="1" value="13" />
+              <span class="range-value" id="font-size-val">13px</span>
+            </div>
+          </div>
+          <div class="appearance-row" style="margin-top:8px;">
+            <span class="appearance-label">Max width</span>
+            <div class="range-group">
+              <input type="range" id="max-width" min="150" max="600" step="10" value="300" />
+              <span class="range-value" id="max-width-val">300px</span>
+            </div>
+          </div>
+          <div class="appearance-row" style="margin-top:8px;">
+            <span class="appearance-label">Font</span>
+            <select id="font-family" class="font-select">
+              <option value="system-ui, -apple-system, sans-serif">System UI</option>
+              <option value="Georgia, &quot;Times New Roman&quot;, serif">Serif</option>
+              <option value="&quot;SFMono-Regular&quot;, &quot;Consolas&quot;, &quot;Liberation Mono&quot;, monospace">Mono</option>
+              <option value="&quot;Helvetica Neue&quot;, Arial, sans-serif">Sans-serif</option>
+            </select>
+          </div>
+          <div class="appearance-row" style="margin-top:8px;">
+            <span class="appearance-label">Hide delay</span>
+            <div class="range-group">
+              <input type="range" id="hide-delay" min="300" max="3000" step="100" value="300" />
+              <span class="range-value" id="hide-delay-val">0.3s</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div><!-- /panels -->
+
+</body>
+</html>
