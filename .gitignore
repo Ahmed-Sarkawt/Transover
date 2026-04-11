@@ -1,4 +1,5 @@
 # Only dist/ is published — source code is not tracked
+.claude/
 src/
 node_modules/
 dist.zip
