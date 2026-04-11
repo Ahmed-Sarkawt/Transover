@@ -1,5 +1,11 @@
+# Only dist/ is published — source code is not tracked
+src/
 node_modules/
 dist.zip
+*.config.ts
+tsconfig.json
+package.json
+package-lock.json
 
 # OS
 .DS_Store
