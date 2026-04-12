@@ -52,17 +52,17 @@
         <!-- Fixed mode: source and target language pickers -->
         <div class="row" id="row-fixed-langs">
           <span class="label">From</span>
-          <select id="source-lang" class="inline-select inline-select--wide"></select>
+          <div id="source-lang"></div>
         </div>
         <div class="row" id="row-target-lang">
           <span class="label">To</span>
-          <select id="target-lang" class="inline-select inline-select--wide"></select>
+          <div id="target-lang"></div>
         </div>
 
         <!-- Auto mode: only target language picker -->
         <div class="row" id="row-auto-target" style="display:none;">
           <span class="label">Translate to</span>
-          <select id="auto-target-lang" class="inline-select inline-select--wide"></select>
+          <div id="auto-target-lang"></div>
         </div>
 
         <div class="row" id="row-two-way">
@@ -142,7 +142,7 @@
               <input type="radio" name="default-behavior" value="language" />
               <span class="radio-dot"></span>
               <span class="radio-label">On for pages in</span>
-              <select id="target-language" class="inline-select"></select>
+              <div id="target-language"></div>
             </label>
             <label class="radio-option">
               <input type="radio" name="default-behavior" value="off" />
