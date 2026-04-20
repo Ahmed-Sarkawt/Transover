@@ -559,16 +559,25 @@
       position: relative;
     }
 
-    .steps::before {
-      content: '';
+    .step-line {
       position: absolute;
-      top: 18px;
-      left: calc(12.5% + 18px);
-      right: calc(12.5% + 18px);
+      top: 17px;
       height: 1px;
-      background: linear-gradient(90deg, var(--border-mid), var(--border-mid));
+      background: var(--border-mid);
+      transform-origin: left center;
+      transform: scaleX(0);
+      transition-property: transform;
+      transition-duration: 500ms;
+      transition-timing-function: cubic-bezier(0.2, 0, 0, 1);
       z-index: 0;
+      will-change: transform;
     }
+
+    .step-line:nth-child(1) { left: calc(12.5% + 18px); width: calc(25% - 36px); transition-delay: 100ms; }
+    .step-line:nth-child(2) { left: calc(37.5% + 18px); width: calc(25% - 36px); transition-delay: 250ms; }
+    .step-line:nth-child(3) { left: calc(62.5% + 18px); width: calc(25% - 36px); transition-delay: 400ms; }
+
+    .steps.lines-in .step-line { transform: scaleX(1); }
 
     .step {
       display: flex;
@@ -866,9 +875,16 @@
     }
 
     .free-icon {
-      font-size: 28px;
-      margin-bottom: 12px;
-      line-height: 1;
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, #127F94 0%, #06272E 100%);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+      box-shadow: 0 0 0 1px rgba(18,127,148,0.35), 0 4px 16px rgba(0,0,0,0.40);
+      flex-shrink: 0;
     }
 
     .free-card-title {
@@ -926,7 +942,7 @@
         gap: 32px;
       }
 
-      .steps::before { display: none; }
+      .step-line { display: none; }
 
       .beta-card {
         padding: 40px 28px;
@@ -965,10 +981,11 @@
       <span class="logo-name">Transover</span>
     </a>
     <div class="header-spacer"></div>
-    <a href="https://github.com/Ahmed-Sarkawt/Transover" target="_blank" rel="noopener" class="header-cta">
-      Get Extension
+    <a href="mailto:itssulaimann@gmail.com?subject=Transover%20Feedback&body=Hi%2C%0A%0AHere%E2%80%99s%20some%20feedback%20on%20Transover%3A%0A%0A" class="header-cta">
+      Share feedback
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M5 12h14M12 5l7 7-7 7"/>
+        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+        <polyline points="22,6 12,13 2,6"/>
       </svg>
     </a>
   </div>
@@ -996,13 +1013,6 @@
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M5 12h14M12 5l7 7-7 7"/>
           </svg>
-        </a>
-        <a href="mailto:itssulaimann@gmail.com?subject=Transover%20Feedback&body=Hi%2C%0A%0AHere%E2%80%99s%20some%20feedback%20on%20Transover%3A%0A%0A" class="btn-ghost">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-            <polyline points="22,6 12,13 2,6"/>
-          </svg>
-          Share feedback
         </a>
       </div>
     </div>
@@ -1147,7 +1157,10 @@
   <p class="section-label" data-stagger>How it works</p>
   <h2 class="section-title" data-stagger style="--delay:60ms">Up and running in two minutes.</h2>
 
-  <div class="steps">
+  <div class="steps" id="steps-row">
+    <div class="step-line"></div>
+    <div class="step-line"></div>
+    <div class="step-line"></div>
     <div class="step" data-stagger style="--delay:0ms">
       <div class="step-num">1</div>
       <div class="step-title">Install</div>
@@ -1182,17 +1195,31 @@
   </p>
   <div class="free-grid">
     <div class="free-card" data-stagger="left" style="--delay:0ms">
-      <div class="free-icon">∞</div>
+      <div class="free-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 12c-2-2.5-4-4-6-4a4 4 0 0 0 0 8c2 0 4-1.5 6-4zm0 0c2 2.5 4 4 6 4a4 4 0 0 0 0-8c-2 0-4 1.5-6 4z"/>
+        </svg>
+      </div>
       <div class="free-card-title">Free forever</div>
       <p class="free-card-desc">No trial period. No freemium. No "upgrade to translate more". The full extension, always.</p>
     </div>
     <div class="free-card" data-stagger style="--delay:80ms">
-      <div class="free-icon">⚡</div>
+      <div class="free-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+      </div>
       <div class="free-card-title">No account needed</div>
       <p class="free-card-desc">Install it and it works. No email, no signup, no dashboard to log into.</p>
     </div>
     <div class="free-card" data-stagger="right" style="--delay:160ms">
-      <div class="free-icon">🔒</div>
+      <div class="free-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+        </svg>
+      </div>
       <div class="free-card-title">No data collection</div>
       <p class="free-card-desc">Your browsing stays yours. Nothing is tracked, logged, or sent anywhere.</p>
     </div>
@@ -1284,6 +1311,18 @@
 
   document.querySelectorAll('[data-stagger], [data-stagger="left"], [data-stagger="right"]')
     .forEach(el => io.observe(el));
+
+  // ── Step connector line animation ─────────────────────────────────
+  const stepsRow = document.getElementById('steps-row');
+  if (stepsRow) {
+    const lineObserver = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) {
+        stepsRow.classList.add('lines-in');
+        lineObserver.disconnect();
+      }
+    }, { threshold: 0.35 });
+    lineObserver.observe(stepsRow);
+  }
 
   // ── Interactive demo tooltip ───────────────────────────────────────
   const tooltip  = document.getElementById('demo-tooltip');
