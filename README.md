@@ -23,11 +23,11 @@ Hover your mouse over any word or sentence on any webpage and a tooltip instantl
 
 ## How to install
 
-1. Download or clone this repo
+1. Download the latest `transover-*.zip` from the [Releases page](https://github.com/Ahmed-Sarkawt/Transover/releases/latest) and unzip it
 2. Open Chrome and go to `chrome://extensions`
 3. Enable **Developer mode** (top right toggle)
 4. Click **Load unpacked**
-5. Select the `dist/` folder
+5. Select the `dist/` folder inside the unzipped archive
 
 ## How to use
 

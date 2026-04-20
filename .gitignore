@@ -1,6 +1,6 @@
-# Only dist/ is published — source code is not tracked
 .claude/
 src/
+dist/
 node_modules/
 dist.zip
 *.config.ts
