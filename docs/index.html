@@ -807,6 +807,105 @@
     .header-cta:hover svg { transform: translateX(3px); }
 
     /* ─────────────────────────────────────────
+       ALWAYS FREE SECTION
+    ───────────────────────────────────────── */
+    .free {
+      padding: 88px 28px 80px;
+      max-width: 1100px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+      text-align: center;
+    }
+
+    .free-headline {
+      font-family: 'Fraunces', Georgia, serif;
+      font-style: italic;
+      font-weight: 700;
+      font-size: clamp(32px, 4vw, 52px);
+      color: #ffffff;
+      letter-spacing: -0.03em;
+      line-height: 1.08;
+      margin-bottom: 12px;
+      text-wrap: balance;
+    }
+
+    .free-sub {
+      font-size: 16px;
+      color: var(--text-muted);
+      margin-bottom: 52px;
+      max-width: 420px;
+      margin-left: auto;
+      margin-right: auto;
+      line-height: 1.6;
+    }
+
+    .free-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      max-width: 820px;
+      margin: 0 auto;
+    }
+
+    .free-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      padding: 28px 24px 30px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.07);
+      transition-property: border-color, box-shadow, transform;
+      transition-duration: 0.25s;
+      transition-timing-function: ease-out;
+    }
+
+    .free-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(30,184,212,0.28);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.12), 0 16px 40px rgba(0,0,0,0.35);
+    }
+
+    .free-icon {
+      font-size: 28px;
+      margin-bottom: 12px;
+      line-height: 1;
+    }
+
+    .free-card-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 6px;
+      letter-spacing: -0.01em;
+    }
+
+    .free-card-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    /* ─────────────────────────────────────────
+       CURSOR ORB
+    ───────────────────────────────────────── */
+    #cursor-orb {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 700px;
+      height: 700px;
+      border-radius: 50%;
+      background: radial-gradient(circle at center,
+        rgba(30, 184, 212, 0.07) 0%,
+        rgba(18, 127, 148, 0.04) 40%,
+        transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+      will-change: transform;
+      transform: translate(-350px, -350px);
+    }
+
+    /* ─────────────────────────────────────────
        RESPONSIVE
     ───────────────────────────────────────── */
     @media (max-width: 820px) {
@@ -816,7 +915,8 @@
         padding: 64px 20px 60px;
       }
 
-      .features-grid {
+      .features-grid,
+      .free-grid {
         grid-template-columns: 1fr;
         gap: 14px;
       }
@@ -844,6 +944,9 @@
 </head>
 <body>
 
+<!-- Cursor glow orb — follows mouse with lerp -->
+<div id="cursor-orb"></div>
+
 <!-- ── Header ──────────────────────────────────────────────────────── -->
 <header>
   <div class="header-inner">
@@ -862,8 +965,8 @@
       <span class="logo-name">Transover</span>
     </a>
     <div class="header-spacer"></div>
-    <a href="#beta" class="header-cta">
-      Join beta
+    <a href="https://github.com/Ahmed-Sarkawt/Transover" target="_blank" rel="noopener" class="header-cta">
+      Get Extension
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M5 12h14M12 5l7 7-7 7"/>
       </svg>
@@ -888,17 +991,18 @@
       </p>
 
       <div class="hero-actions" data-stagger style="--delay:240ms">
-        <a href="#beta" class="btn-primary">
-          Become a tester
+        <a href="https://github.com/Ahmed-Sarkawt/Transover" target="_blank" rel="noopener" class="btn-primary">
+          Get Extension
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M5 12h14M12 5l7 7-7 7"/>
           </svg>
         </a>
-        <a href="https://github.com/Ahmed-Sarkawt/Transover" target="_blank" rel="noopener" class="btn-ghost">
+        <a href="mailto:itssulaimann@gmail.com?subject=Transover%20Feedback&body=Hi%2C%0A%0AHere%E2%80%99s%20some%20feedback%20on%20Transover%3A%0A%0A" class="btn-ghost">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77A5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+            <polyline points="22,6 12,13 2,6"/>
           </svg>
-          Source
+          Share feedback
         </a>
       </div>
     </div>
@@ -1069,25 +1173,53 @@
 
 <div class="section-divider"></div>
 
-<!-- ── Beta CTA ─────────────────────────────────────────────────────── -->
+<!-- ── Always Free ──────────────────────────────────────────────────── -->
+<section class="free">
+  <p class="section-label" data-stagger>Commitment</p>
+  <h2 class="free-headline" data-stagger style="--delay:60ms">Always free.<br>No strings attached.</h2>
+  <p class="free-sub" data-stagger style="--delay:120ms">
+    Transover will never have a paid tier, a premium plan, or a usage limit. Reading shouldn't cost anything.
+  </p>
+  <div class="free-grid">
+    <div class="free-card" data-stagger="left" style="--delay:0ms">
+      <div class="free-icon">∞</div>
+      <div class="free-card-title">Free forever</div>
+      <p class="free-card-desc">No trial period. No freemium. No "upgrade to translate more". The full extension, always.</p>
+    </div>
+    <div class="free-card" data-stagger style="--delay:80ms">
+      <div class="free-icon">⚡</div>
+      <div class="free-card-title">No account needed</div>
+      <p class="free-card-desc">Install it and it works. No email, no signup, no dashboard to log into.</p>
+    </div>
+    <div class="free-card" data-stagger="right" style="--delay:160ms">
+      <div class="free-icon">🔒</div>
+      <div class="free-card-title">No data collection</div>
+      <p class="free-card-desc">Your browsing stays yours. Nothing is tracked, logged, or sent anywhere.</p>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ── Feedback CTA ──────────────────────────────────────────────────── -->
 <section class="beta" id="beta">
   <div class="beta-card" data-stagger>
-    <p class="beta-eyebrow">Early access</p>
-    <h2 class="beta-title">Help shape Transover.</h2>
+    <p class="beta-eyebrow">Shape what's next</p>
+    <h2 class="beta-title">Got thoughts? Let us know.</h2>
     <p class="beta-sub">
-      The extension is in active development. Join the beta to get early access, report bugs, and directly influence what gets built next.
+      Transover is actively developed. Bug reports, feature ideas, and honest opinions go directly to the builder.
     </p>
     <a
       class="beta-btn"
-      href="mailto:itssulaimann@gmail.com?subject=Transover%20Beta%20Tester%20Request&body=Hi%2C%0A%0AI%E2%80%99d%20like%20to%20join%20the%20Transover%20beta.%0A%0ABrowser%3A%20Chrome%20%28version%3A%20%29%0AOS%3A%20%0ALanguages%20I%20read%3A%20%0A%0AAnything%20specific%20I%E2%80%99d%20like%20to%20test%3A%20%0A"
+      href="mailto:itssulaimann@gmail.com?subject=Transover%20Feedback&body=Hi%2C%0A%0AHere%E2%80%99s%20some%20feedback%20on%20Transover%3A%0A%0A"
     >
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
         <polyline points="22,6 12,13 2,6"/>
       </svg>
-      Request beta access
+      Share feedback
     </a>
-    <p class="beta-note">Opens your email client — no forms, no data collection.</p>
+    <p class="beta-note">Opens your email client — no forms, no tracking.</p>
   </div>
 </section>
 
@@ -1108,11 +1240,37 @@
       </svg>
       <span class="footer-logo-name">Transover</span>
     </a>
-    <span class="footer-copy">Chrome extension · Early beta · 2026</span>
+    <span class="footer-copy">Built by <strong style="color:var(--text-muted);font-weight:600;">Ahmed Sulaiman</strong> · Chrome extension · 2026</span>
   </div>
 </footer>
 
 <script>
+  // ── Cursor orb ────────────────────────────────────────────────────
+  (function () {
+    const orb = document.getElementById('cursor-orb');
+    const HALF = 350;
+    let cx = -HALF, cy = -HALF;
+    let tx = -HALF, ty = -HALF;
+    let ticking = false;
+
+    document.addEventListener('mousemove', (e) => {
+      tx = e.clientX;
+      ty = e.clientY;
+      if (!ticking) { ticking = true; requestAnimationFrame(tick); }
+    });
+
+    function tick() {
+      cx += (tx - cx) * 0.09;
+      cy += (ty - cy) * 0.09;
+      orb.style.transform = `translate(${cx - HALF}px, ${cy - HALF}px)`;
+      if (Math.abs(tx - cx) > 0.5 || Math.abs(ty - cy) > 0.5) {
+        requestAnimationFrame(tick);
+      } else {
+        ticking = false;
+      }
+    }
+  })();
+
   // ── Scroll entrance animations ─────────────────────────────────────
   const io = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
