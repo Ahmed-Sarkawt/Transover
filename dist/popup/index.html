@@ -19,17 +19,21 @@
         <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
       </svg>
     </span>
-    <span class="header-title">Hover Translator</span>
+    <span class="header-title">Transover</span>
     <div class="header-actions">
       <button class="icon-btn" id="theme-btn" title="Toggle light/dark mode">🌙</button>
-      <button class="icon-btn" id="settings-btn" title="Settings">⚙️</button>
+      <button class="icon-btn" id="settings-btn" title="Settings">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        </svg>
+      </button>
     </div>
   </div>
 
   <!-- Sliding panels -->
   <div class="panels" id="panels">
 
-    <!-- Panel 1: Main -->
+    <!-- ── Panel 1: Main ── -->
     <div class="panel">
       <div class="body">
 
@@ -44,66 +48,76 @@
           </div>
         </div>
 
-        <div class="row">
-          <span class="label">Source</span>
-          <button class="direction-btn" id="toggle-source-mode">Fixed</button>
+        <!-- Language & source section -->
+        <div class="section">
+          <div class="row">
+            <span class="label">Source</span>
+            <div class="seg-control">
+              <button class="seg-btn" id="source-fixed">Fixed</button>
+              <button class="seg-btn" id="source-auto">Auto</button>
+            </div>
+          </div>
+
+          <!-- Fixed mode: from → to pickers inline -->
+          <div id="row-fixed-langs" class="lang-pair">
+            <div id="source-lang"></div>
+            <svg class="lang-arrow" width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <div id="target-lang"></div>
+          </div>
+          <!-- Keep hidden row for auto target (needed for layout parity) -->
+          <div id="row-target-lang" style="display:none;"></div>
+
+          <!-- Auto mode: single target picker -->
+          <div id="row-auto-target" class="row" style="display:none;">
+            <span class="label">Translate to</span>
+            <div id="auto-target-lang"></div>
+          </div>
+
+          <!-- Two-way (fixed mode only) -->
+          <div class="row" id="row-two-way">
+            <span class="label">Two-way</span>
+            <label class="switch">
+              <input type="checkbox" id="two-way" />
+              <span class="slider"></span>
+            </label>
+          </div>
         </div>
 
-        <!-- Fixed mode: source and target language pickers -->
-        <div class="row" id="row-fixed-langs">
-          <span class="label">From</span>
-          <div id="source-lang"></div>
-        </div>
-        <div class="row" id="row-target-lang">
-          <span class="label">To</span>
-          <div id="target-lang"></div>
-        </div>
-
-        <!-- Auto mode: only target language picker -->
-        <div class="row" id="row-auto-target" style="display:none;">
-          <span class="label">Translate to</span>
-          <div id="auto-target-lang"></div>
-        </div>
-
-        <div class="row" id="row-two-way">
-          <span class="label">Two-way</span>
-          <label class="switch">
-            <input type="checkbox" id="two-way" />
-            <span class="slider"></span>
-          </label>
-        </div>
-
-        <div class="row">
-          <span class="label">Mode</span>
-          <button class="direction-btn" id="toggle-mode">Word</button>
-        </div>
-
-        <div class="row">
-          <span class="label">Translate selection</span>
-          <label class="switch">
-            <input type="checkbox" id="selection-enabled" checked />
-            <span class="slider"></span>
-          </label>
+        <!-- Mode & options section -->
+        <div class="section">
+          <div class="row">
+            <span class="label">Mode</span>
+            <div class="seg-control">
+              <button class="seg-btn" id="mode-word">Word</button>
+              <button class="seg-btn" id="mode-sentence">Sentence</button>
+            </div>
+          </div>
+          <div class="row">
+            <span class="label">Smart skip</span>
+            <label class="switch">
+              <input type="checkbox" id="smart-skip" checked />
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div class="row">
+            <span class="label">Translate selection</span>
+            <label class="switch">
+              <input type="checkbox" id="selection-enabled" checked />
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div class="row">
+            <span class="label">Show original text</span>
+            <label class="switch">
+              <input type="checkbox" id="show-both-texts" />
+              <span class="slider"></span>
+            </label>
+          </div>
         </div>
 
-        <div class="row">
-          <span class="label">Smart skip</span>
-          <label class="switch">
-            <input type="checkbox" id="smart-skip" checked />
-            <span class="slider"></span>
-          </label>
-        </div>
-
-        <div class="row">
-          <span class="label">Show original text</span>
-          <label class="switch">
-            <input type="checkbox" id="show-both-texts" />
-            <span class="slider"></span>
-          </label>
-        </div>
-
-        <hr class="divider" />
-
+        <!-- Shortcuts reference -->
         <div class="shortcuts">
           <div class="shortcut-row">
             <kbd id="hint-trigger">Alt</kbd>
@@ -118,20 +132,93 @@
             <span>Dismiss pinned tooltip</span>
           </div>
         </div>
+
       </div>
     </div>
 
-    <!-- Panel 2: Settings -->
+    <!-- ── Panel 2: Settings ── -->
     <div class="panel">
       <div class="settings-header">
-        <button class="back-btn" id="back-btn" title="Back">←</button>
+        <button class="back-btn" id="back-btn" title="Back">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path d="M9 2L3 7l6 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
         <span class="settings-title">Settings</span>
       </div>
       <div class="settings-body">
 
-        <!-- Default Behavior -->
+        <!-- ── 1. Appearance ── -->
         <div>
-          <div class="settings-group-label">Default Behavior</div>
+          <div class="settings-group-label">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/>
+            </svg>
+            Appearance
+          </div>
+          <div class="appearance-row">
+            <span class="appearance-label">Font size</span>
+            <div class="range-group">
+              <input type="range" id="font-size" min="11" max="22" step="1" value="13" />
+              <span class="range-value" id="font-size-val">13px</span>
+            </div>
+          </div>
+          <div class="appearance-row" style="margin-top:8px;">
+            <span class="appearance-label">Max width</span>
+            <div class="range-group">
+              <input type="range" id="max-width" min="150" max="600" step="10" value="300" />
+              <span class="range-value" id="max-width-val">300px</span>
+            </div>
+          </div>
+          <div class="appearance-row" style="margin-top:8px;">
+            <span class="appearance-label">Corners</span>
+            <div class="range-group">
+              <input type="range" id="border-radius" min="4" max="20" step="1" value="10" />
+              <span class="range-value" id="border-radius-val">10px</span>
+            </div>
+          </div>
+          <div class="appearance-row" style="margin-top:8px;">
+            <span class="appearance-label">Blur</span>
+            <div class="range-group">
+              <input type="range" id="blur-level" min="0" max="24" step="2" value="14" />
+              <span class="range-value" id="blur-level-val">14px</span>
+            </div>
+          </div>
+          <div class="appearance-row" style="margin-top:8px;">
+            <span class="appearance-label">Hide delay</span>
+            <div class="range-group">
+              <input type="range" id="hide-delay" min="300" max="3000" step="100" value="300" />
+              <span class="range-value" id="hide-delay-val">0.3s</span>
+            </div>
+          </div>
+          <div class="appearance-row" style="margin-top:8px;">
+            <span class="appearance-label">Font</span>
+            <select id="font-family" class="font-select">
+              <option value="system-ui, -apple-system, sans-serif">System UI</option>
+              <option value="Georgia, &quot;Times New Roman&quot;, serif">Serif</option>
+              <option value="&quot;SFMono-Regular&quot;, &quot;Consolas&quot;, &quot;Liberation Mono&quot;, monospace">Mono</option>
+              <option value="&quot;Helvetica Neue&quot;, Arial, sans-serif">Sans-serif</option>
+            </select>
+          </div>
+          <div class="row" style="margin-top:8px;">
+            <span class="label">Compact mode</span>
+            <label class="switch">
+              <input type="checkbox" id="compact-mode" />
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <hr class="divider" />
+
+        <!-- ── 2. Activation ── -->
+        <div>
+          <div class="settings-group-label">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/>
+            </svg>
+            Activation
+          </div>
           <div class="radio-group">
             <label class="radio-option">
               <input type="radio" name="default-behavior" value="on" />
@@ -154,39 +241,22 @@
 
         <hr class="divider" />
 
-        <!-- Shortcuts -->
+        <!-- ── 3. Grammar ── -->
         <div>
-          <div class="settings-group-label">Keyboard Shortcuts</div>
-          <div class="shortcut-edit-row" style="margin-top:8px;">
-            <span class="shortcut-edit-label">On-demand key</span>
-            <button class="shortcut-capture-btn" id="capture-trigger" data-key="triggerModifier">Alt</button>
+          <div class="settings-group-label">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/>
+            </svg>
+            Grammar
           </div>
-          <div class="shortcut-edit-row" style="margin-top:8px;">
-            <span class="shortcut-edit-label">Pin / unpin key</span>
-            <button class="shortcut-capture-btn" id="capture-pin" data-key="pinKey">P</button>
-          </div>
-          <div class="shortcut-edit-row" style="margin-top:8px;">
-            <span class="shortcut-edit-label">Dismiss key</span>
-            <button class="shortcut-capture-btn" id="capture-dismiss" data-key="dismissKey">Escape</button>
-          </div>
-          <p class="settings-hint" style="margin-top:6px;">
-            Click a button, then press the key.<br/>On-demand key must be a modifier.
-          </p>
-        </div>
-
-        <hr class="divider" />
-
-        <!-- Grammar View -->
-        <div>
-          <div class="settings-group-label">Grammar View</div>
           <div class="row">
-            <span class="label">Show grammar overlay</span>
+            <span class="label">Grammar overlay</span>
             <label class="switch">
               <input type="checkbox" id="grammar-mode" />
               <span class="slider"></span>
             </label>
           </div>
-          <div class="appearance-row" id="row-grammar-position" style="margin-top:6px;">
+          <div class="appearance-row" id="row-grammar-position" style="margin-top:8px;">
             <span class="appearance-label">Legend</span>
             <select id="grammar-position" class="font-select">
               <option value="top">Top</option>
@@ -195,17 +265,22 @@
             </select>
           </div>
           <p class="settings-hint" style="margin-top:6px;">
-            Sentence mode. Supported: English, German, Spanish, French, Japanese.<br/>
+            Sentence mode. Supported: EN, DE, ES, FR, JA.<br/>
             Colors words by grammatical role.
           </p>
         </div>
 
         <hr class="divider" />
 
-        <!-- Translation Engines -->
+        <!-- ── 4. Engines ── -->
         <div>
-          <div class="settings-group-label">Translation Engines</div>
-          <div class="shortcut-edit-row" style="margin-top:8px;">
+          <div class="settings-group-label">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="6" width="20" height="12" rx="2"/><path d="M12 12h.01"/><path d="M7 12h.01"/><path d="M17 12h.01"/>
+            </svg>
+            Engines
+          </div>
+          <div class="shortcut-edit-row">
             <span class="shortcut-edit-label">Engine</span>
             <select id="preferred-engine" class="font-select">
               <option value="auto">Auto (fallback chain)</option>
@@ -237,39 +312,29 @@
 
         <hr class="divider" />
 
-        <!-- Tooltip Appearance -->
+        <!-- ── 5. Shortcuts ── -->
         <div>
-          <div class="settings-group-label">Tooltip Appearance</div>
-          <div class="appearance-row" style="margin-top:8px;">
-            <span class="appearance-label">Font size</span>
-            <div class="range-group">
-              <input type="range" id="font-size" min="11" max="22" step="1" value="13" />
-              <span class="range-value" id="font-size-val">13px</span>
-            </div>
+          <div class="settings-group-label">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="4" width="20" height="16" rx="2"/><path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M8 12h.01M12 12h.01M16 12h.01M7 16h10"/>
+            </svg>
+            Shortcuts
           </div>
-          <div class="appearance-row" style="margin-top:8px;">
-            <span class="appearance-label">Max width</span>
-            <div class="range-group">
-              <input type="range" id="max-width" min="150" max="600" step="10" value="300" />
-              <span class="range-value" id="max-width-val">300px</span>
-            </div>
+          <div class="shortcut-edit-row">
+            <span class="shortcut-edit-label">On-demand key</span>
+            <button class="shortcut-capture-btn" id="capture-trigger" data-key="triggerModifier">Alt</button>
           </div>
-          <div class="appearance-row" style="margin-top:8px;">
-            <span class="appearance-label">Font</span>
-            <select id="font-family" class="font-select">
-              <option value="system-ui, -apple-system, sans-serif">System UI</option>
-              <option value="Georgia, &quot;Times New Roman&quot;, serif">Serif</option>
-              <option value="&quot;SFMono-Regular&quot;, &quot;Consolas&quot;, &quot;Liberation Mono&quot;, monospace">Mono</option>
-              <option value="&quot;Helvetica Neue&quot;, Arial, sans-serif">Sans-serif</option>
-            </select>
+          <div class="shortcut-edit-row" style="margin-top:8px;">
+            <span class="shortcut-edit-label">Pin / unpin key</span>
+            <button class="shortcut-capture-btn" id="capture-pin" data-key="pinKey">P</button>
           </div>
-          <div class="appearance-row" style="margin-top:8px;">
-            <span class="appearance-label">Hide delay</span>
-            <div class="range-group">
-              <input type="range" id="hide-delay" min="300" max="3000" step="100" value="300" />
-              <span class="range-value" id="hide-delay-val">0.3s</span>
-            </div>
+          <div class="shortcut-edit-row" style="margin-top:8px;">
+            <span class="shortcut-edit-label">Dismiss key</span>
+            <button class="shortcut-capture-btn" id="capture-dismiss" data-key="dismissKey">Escape</button>
           </div>
+          <p class="settings-hint" style="margin-top:6px;">
+            Click a button, then press the key.<br/>On-demand key must be a modifier.
+          </p>
         </div>
 
       </div>
