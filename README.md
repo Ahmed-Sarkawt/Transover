@@ -15,6 +15,7 @@ Hover your mouse over any word or sentence on any webpage and a tooltip instantl
 - **Grammar overlay** — color-codes words by grammatical role (EN, DE, ES, FR, JA)
 - **Show original text** — displays source and translation side by side
 - **Translate selection** — select any text and release to translate it
+- **Skip form fields** — optionally disable translation inside inputs and textareas
 - **Pin tooltip** — keep the tooltip open with `Alt+P`
 - **Multiple engines** — Chrome AI (on-device), MyMemory, Lingva, LibreTranslate, DeepL
 - **Per-site control** — enable or disable on any specific site
