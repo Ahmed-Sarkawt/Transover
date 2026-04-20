@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Transover — Translate on hover</title>
+  <meta name="description" content="Point at any foreign word and instantly see its translation. No clicks, no copying. Transover lives in your browser and stays out of the way." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;1,9..144,300;1,9..144,500;1,9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    /* ── Reset ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    /* ── Tokens ── */
+    :root {
+      --bg:          #050f15;
+      --bg-raised:   #091a24;
+      --bg-card:     #0c2333;
+      --border:      rgba(18, 127, 148, 0.12);
+      --border-mid:  rgba(18, 127, 148, 0.22);
+      --border-strong: rgba(18, 127, 148, 0.40);
+      --accent:      #127f94;
+      --accent-mid:  #19a0b8;
+      --accent-glow: rgba(18, 127, 148, 0.18);
+      --text:        #d4eef2;
+      --text-muted:  rgba(139, 191, 201, 0.62);
+      --text-faint:  rgba(100, 155, 168, 0.35);
+      --radius-card: 16px;
+    }
+
+    /* ── Base ── */
+    body {
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    /* ── Radial background glow ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 70% 50% at 65% -10%, rgba(18,127,148,0.13) 0%, transparent 70%),
+        radial-gradient(ellipse 50% 40% at 10% 80%, rgba(18,127,148,0.07) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── Layout helpers ── */
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 28px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ─────────────────────────────────────────
+       HEADER
+    ───────────────────────────────────────── */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      padding: 0 28px;
+      backdrop-filter: blur(20px) saturate(1.4);
+      -webkit-backdrop-filter: blur(20px) saturate(1.4);
+      background: rgba(5, 15, 21, 0.75);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .header-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+
+    .logo-icon {
+      width: 30px;
+      height: 30px;
+      flex-shrink: 0;
+    }
+
+    .logo-name {
+      font-family: 'Fraunces', Georgia, serif;
+      font-style: italic;
+      font-weight: 500;
+      font-size: 18px;
+      color: var(--text);
+      letter-spacing: -0.01em;
+    }
+
+    .header-spacer { flex: 1; }
+
+    .header-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 8px 18px;
+      background: var(--accent);
+      border: none;
+      border-radius: 8px;
+      color: #fff;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition-property: background, scale, box-shadow;
+      transition-duration: 0.15s;
+      transition-timing-function: ease-out;
+      letter-spacing: 0.01em;
+    }
+
+    .header-cta:hover {
+      background: var(--accent-mid);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+
+    .header-cta:active { scale: 0.96; }
+
+    /* ─────────────────────────────────────────
+       HERO
+    ───────────────────────────────────────── */
+    .hero {
+      padding: 100px 28px 80px;
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent-mid);
+      background: rgba(18, 127, 148, 0.10);
+      border: 1px solid rgba(18, 127, 148, 0.22);
+      padding: 4px 10px;
+      border-radius: 20px;
+      margin-bottom: 24px;
+      width: fit-content;
+    }
+
+    .hero-label::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent-mid);
+      animation: pulse-dot 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.5; transform: scale(0.75); }
+    }
+
+    .hero-headline {
+      font-family: 'Fraunces', Georgia, serif;
+      font-style: italic;
+      font-weight: 700;
+      font-size: clamp(42px, 5vw, 62px);
+      line-height: 1.08;
+      letter-spacing: -0.03em;
+      color: var(--text);
+      margin-bottom: 20px;
+      text-wrap: balance;
+    }
+
+    .hero-headline em {
+      font-style: normal;
+      color: var(--accent-mid);
+    }
+
+    .hero-sub {
+      font-size: 16px;
+      color: var(--text-muted);
+      line-height: 1.65;
+      margin-bottom: 36px;
+      text-wrap: pretty;
+      max-width: 420px;
+    }
+
+    .hero-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 24px;
+      background: var(--accent);
+      border: none;
+      border-radius: 10px;
+      color: #fff;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      transition-property: background, scale, box-shadow;
+      transition-duration: 0.15s;
+      transition-timing-function: ease-out;
+      letter-spacing: 0.01em;
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-mid);
+      box-shadow: 0 0 0 4px var(--accent-glow), 0 8px 24px rgba(18,127,148,0.20);
+    }
+
+    .btn-primary:active { scale: 0.96; }
+
+    .btn-ghost {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 11px 22px;
+      background: transparent;
+      border: 1px solid var(--border-mid);
+      border-radius: 10px;
+      color: var(--text-muted);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition-property: border-color, color, scale;
+      transition-duration: 0.15s;
+      transition-timing-function: ease-out;
+    }
+
+    .btn-ghost:hover {
+      border-color: var(--border-strong);
+      color: var(--text);
+    }
+
+    .btn-ghost:active { scale: 0.96; }
+
+    /* ── Demo card ── */
+    .hero-demo {
+      position: relative;
+    }
+
+    .demo-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-mid);
+      border-radius: 18px;
+      padding: 28px 30px 32px;
+      box-shadow:
+        0 0 0 1px rgba(18,127,148,0.08),
+        0 24px 64px rgba(0,0,0,0.55),
+        inset 0 1px 0 rgba(255,255,255,0.04);
+      position: relative;
+      overflow: visible;
+    }
+
+    .demo-card-chrome {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 18px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .chrome-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+    }
+
+    .chrome-dot:nth-child(1) { background: rgba(255,255,255,0.12); }
+    .chrome-dot:nth-child(2) { background: rgba(255,255,255,0.08); }
+    .chrome-dot:nth-child(3) { background: rgba(255,255,255,0.05); }
+
+    .chrome-bar {
+      flex: 1;
+      height: 22px;
+      background: rgba(255,255,255,0.04);
+      border-radius: 4px;
+      margin-left: 4px;
+      display: flex;
+      align-items: center;
+      padding: 0 10px;
+      gap: 5px;
+    }
+
+    .chrome-bar-lock {
+      opacity: 0.25;
+    }
+
+    .chrome-bar-url {
+      font-size: 10.5px;
+      color: var(--text-faint);
+      letter-spacing: 0.01em;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .demo-text {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 14.5px;
+      line-height: 1.85;
+      color: rgba(180, 218, 228, 0.75);
+      user-select: none;
+    }
+
+    /* Hoverable words */
+    .hw {
+      cursor: default;
+      position: relative;
+      border-radius: 3px;
+      padding: 1px 2px;
+      margin: 0 -2px;
+      transition-property: background, color;
+      transition-duration: 120ms;
+      transition-timing-function: ease-out;
+    }
+
+    .hw:hover {
+      background: rgba(18, 127, 148, 0.15);
+      color: var(--text);
+    }
+
+    /* Tooltip */
+    .demo-tooltip {
+      position: absolute;
+      background: rgba(6, 39, 46, 0.92);
+      box-shadow:
+        0 0 0 1px rgba(18, 127, 148, 0.30),
+        0 12px 32px rgba(0,0,0,0.55);
+      border-radius: 10px;
+      padding: 9px 12px;
+      min-width: 150px;
+      pointer-events: none;
+      z-index: 50;
+      backdrop-filter: blur(16px) saturate(1.4);
+      -webkit-backdrop-filter: blur(16px) saturate(1.4);
+
+      opacity: 0;
+      transform: scale(0.94) translateY(6px);
+      transition-property: opacity, transform;
+      transition-duration: 180ms;
+      transition-timing-function: cubic-bezier(0.2, 0, 0, 1);
+      will-change: transform, opacity;
+    }
+
+    .demo-tooltip.visible {
+      opacity: 1;
+      transform: none;
+    }
+
+    .demo-tooltip.hiding {
+      opacity: 0;
+      transform: scale(0.97) translateY(-4px);
+      transition-duration: 130ms;
+      transition-timing-function: cubic-bezier(0.4, 0, 1, 1);
+    }
+
+    .tt-header {
+      font-size: 10px;
+      color: rgba(139, 191, 201, 0.45);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      font-weight: 600;
+      margin-bottom: 5px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .tt-arrow {
+      opacity: 0.4;
+    }
+
+    .tt-body {
+      font-size: 14.5px;
+      font-weight: 700;
+      color: #d4eef2;
+      line-height: 1.3;
+    }
+
+    .tt-pos {
+      display: inline-block;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: rgba(139, 191, 201, 0.5);
+      margin-left: 6px;
+      vertical-align: middle;
+    }
+
+    /* ─────────────────────────────────────────
+       DIVIDER
+    ───────────────────────────────────────── */
+    .section-divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent 0%, var(--border-mid) 30%, var(--border-mid) 70%, transparent 100%);
+      margin: 0 28px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ─────────────────────────────────────────
+       FEATURES
+    ───────────────────────────────────────── */
+    .features {
+      padding: 88px 28px 80px;
+      max-width: 1100px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    .section-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent-mid);
+      margin-bottom: 14px;
+    }
+
+    .section-title {
+      font-family: 'Fraunces', Georgia, serif;
+      font-style: italic;
+      font-weight: 500;
+      font-size: clamp(28px, 3.5vw, 42px);
+      line-height: 1.12;
+      letter-spacing: -0.025em;
+      color: var(--text);
+      margin-bottom: 52px;
+      text-wrap: balance;
+      max-width: 580px;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .feature-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      padding: 26px 24px 28px;
+      transition-property: border-color, box-shadow;
+      transition-duration: 0.2s;
+      transition-timing-function: ease-out;
+    }
+
+    .feature-card:hover {
+      border-color: var(--border-mid);
+      box-shadow: 0 0 0 1px rgba(18,127,148,0.08), 0 16px 40px rgba(0,0,0,0.30);
+    }
+
+    .feature-icon {
+      width: 38px;
+      height: 38px;
+      background: rgba(18, 127, 148, 0.12);
+      border: 1px solid rgba(18, 127, 148, 0.20);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+      color: var(--accent-mid);
+    }
+
+    .feature-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 8px;
+      letter-spacing: -0.01em;
+    }
+
+    .feature-desc {
+      font-size: 13.5px;
+      color: var(--text-muted);
+      line-height: 1.65;
+      text-wrap: pretty;
+    }
+
+    /* ─────────────────────────────────────────
+       HOW IT WORKS
+    ───────────────────────────────────────── */
+    .how {
+      padding: 80px 28px;
+      max-width: 1100px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0;
+      margin-top: 52px;
+      position: relative;
+    }
+
+    .steps::before {
+      content: '';
+      position: absolute;
+      top: 18px;
+      left: calc(12.5% + 18px);
+      right: calc(12.5% + 18px);
+      height: 1px;
+      background: linear-gradient(90deg, var(--border-mid), var(--border-mid));
+      z-index: 0;
+    }
+
+    .step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 0 16px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .step-num {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--bg-card);
+      border: 1px solid var(--border-mid);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--accent-mid);
+      margin-bottom: 16px;
+      flex-shrink: 0;
+    }
+
+    .step-title {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 6px;
+      letter-spacing: -0.01em;
+    }
+
+    .step-desc {
+      font-size: 12.5px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    /* ─────────────────────────────────────────
+       BETA CTA
+    ───────────────────────────────────────── */
+    .beta {
+      padding: 80px 28px 100px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .beta-card {
+      max-width: 820px;
+      margin: 0 auto;
+      background: var(--bg-card);
+      border: 1px solid var(--border-mid);
+      border-radius: 22px;
+      padding: 56px 60px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      box-shadow:
+        0 0 0 1px rgba(18,127,148,0.07),
+        0 32px 80px rgba(0,0,0,0.50);
+    }
+
+    /* Soft glow inside the card */
+    .beta-card::before {
+      content: '';
+      position: absolute;
+      top: -60px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 500px;
+      height: 300px;
+      background: radial-gradient(ellipse, rgba(18,127,148,0.14) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .beta-eyebrow {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent-mid);
+      margin-bottom: 18px;
+    }
+
+    .beta-title {
+      font-family: 'Fraunces', Georgia, serif;
+      font-style: italic;
+      font-weight: 700;
+      font-size: clamp(32px, 4vw, 50px);
+      line-height: 1.08;
+      letter-spacing: -0.03em;
+      color: var(--text);
+      margin-bottom: 16px;
+      text-wrap: balance;
+    }
+
+    .beta-sub {
+      font-size: 15px;
+      color: var(--text-muted);
+      line-height: 1.7;
+      max-width: 480px;
+      margin: 0 auto 36px;
+      text-wrap: pretty;
+    }
+
+    .beta-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      padding: 15px 32px;
+      background: var(--accent);
+      border: none;
+      border-radius: 12px;
+      color: #fff;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      transition-property: background, scale, box-shadow;
+      transition-duration: 0.15s;
+      transition-timing-function: ease-out;
+      letter-spacing: 0.01em;
+      position: relative;
+      z-index: 1;
+    }
+
+    .beta-btn:hover {
+      background: var(--accent-mid);
+      box-shadow: 0 0 0 5px var(--accent-glow), 0 12px 32px rgba(18,127,148,0.25);
+    }
+
+    .beta-btn:active { scale: 0.96; }
+
+    .beta-note {
+      margin-top: 16px;
+      font-size: 12px;
+      color: var(--text-faint);
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ─────────────────────────────────────────
+       FOOTER
+    ───────────────────────────────────────── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 28px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .footer-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .footer-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+    }
+
+    .footer-logo-name {
+      font-family: 'Fraunces', Georgia, serif;
+      font-style: italic;
+      font-weight: 500;
+      font-size: 15px;
+      color: var(--text-muted);
+    }
+
+    .footer-copy {
+      font-size: 12px;
+      color: var(--text-faint);
+    }
+
+    /* ─────────────────────────────────────────
+       STAGGER ENTRANCE
+    ───────────────────────────────────────── */
+    [data-stagger] {
+      opacity: 0;
+      transform: translateY(14px);
+      filter: blur(3px);
+    }
+
+    [data-stagger].in {
+      animation: stagger-in 480ms cubic-bezier(0.2, 0, 0, 1) forwards;
+    }
+
+    @keyframes stagger-in {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+        filter: blur(0);
+      }
+    }
+
+    /* ─────────────────────────────────────────
+       RESPONSIVE
+    ───────────────────────────────────────── */
+    @media (max-width: 820px) {
+      .hero {
+        grid-template-columns: 1fr;
+        gap: 48px;
+        padding: 64px 20px 60px;
+      }
+
+      .features-grid {
+        grid-template-columns: 1fr;
+        gap: 14px;
+      }
+
+      .steps {
+        grid-template-columns: 1fr 1fr;
+        gap: 32px;
+      }
+
+      .steps::before { display: none; }
+
+      .beta-card {
+        padding: 40px 28px;
+      }
+
+      .hero-sub { max-width: none; }
+    }
+
+    @media (max-width: 520px) {
+      .steps { grid-template-columns: 1fr; }
+      .hero-actions { flex-direction: column; align-items: flex-start; }
+      .footer-inner { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Header ──────────────────────────────────────────────────────── -->
+<header>
+  <div class="header-inner">
+    <a href="#" class="logo">
+      <svg class="logo-icon" viewBox="0 0 75 75" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="75" height="75" rx="16" transform="matrix(-1 0 0 1 75 0)" fill="url(#logo_grad)"/>
+        <path d="M33.0231 39.7295L20.5578 34.8536C16.8943 33.4206 17.0495 28.1841 20.7912 26.9705L53.4845 16.3673C56.7372 15.3124 59.8145 18.3898 58.7596 21.6424L48.1564 54.3358C46.9428 58.0777 41.7063 58.2327 40.2734 54.5692L35.3974 42.1038C34.9717 41.0159 34.111 40.1552 33.0231 39.7295Z" fill="white" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M12.0677 42.7695L24.3374 47.7281C25.3904 48.1535 26.2254 48.9885 26.6508 50.0415L31.6094 62.3112" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <defs>
+          <linearGradient id="logo_grad" x1="0" y1="0" x2="75" y2="75" gradientUnits="userSpaceOnUse">
+            <stop offset="0.154" stop-color="#127F94"/>
+            <stop offset="0.788" stop-color="#06272E"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      <span class="logo-name">Transover</span>
+    </a>
+    <div class="header-spacer"></div>
+    <a href="#beta" class="header-cta">
+      Join beta
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M5 12h14M12 5l7 7-7 7"/>
+      </svg>
+    </a>
+  </div>
+</header>
+
+<!-- ── Hero ────────────────────────────────────────────────────────── -->
+<section>
+  <div class="hero">
+
+    <!-- Left: copy -->
+    <div class="hero-left">
+      <div class="hero-label" data-stagger>Chrome Extension</div>
+
+      <h1 class="hero-headline" data-stagger style="--delay:80ms">
+        Read any language.<br><em>Just hover.</em>
+      </h1>
+
+      <p class="hero-sub" data-stagger style="--delay:160ms">
+        Transover translates foreign words and sentences the moment your cursor touches them — no clicks, no popups, no friction. Works on every site, privately, right inside Chrome.
+      </p>
+
+      <div class="hero-actions" data-stagger style="--delay:240ms">
+        <a href="#beta" class="btn-primary">
+          Become a tester
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </a>
+        <a href="https://github.com" class="btn-ghost">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77A5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+          </svg>
+          Source
+        </a>
+      </div>
+    </div>
+
+    <!-- Right: interactive demo -->
+    <div class="hero-demo" data-stagger style="--delay:120ms">
+      <div class="demo-card">
+
+        <div class="demo-card-chrome">
+          <span class="chrome-dot"></span>
+          <span class="chrome-dot"></span>
+          <span class="chrome-dot"></span>
+          <div class="chrome-bar">
+            <svg class="chrome-bar-lock" width="9" height="10" viewBox="0 0 9 10" fill="none">
+              <rect x="1" y="4" width="7" height="6" rx="1" fill="rgba(255,255,255,0.35)"/>
+              <path d="M2.5 4V3a2 2 0 0 1 4 0v1" stroke="rgba(255,255,255,0.35)" stroke-width="1.2"/>
+            </svg>
+            <span class="chrome-bar-url">wikipedia.org/wiki/German_literature</span>
+          </div>
+        </div>
+
+        <div class="demo-text">
+          <p>
+            Die deutsche <span class="hw" data-word="Literatur" data-trans="Literature" data-pos="Noun">Literatur</span> umfasst
+            <span class="hw" data-word="Werke" data-trans="Works" data-pos="Noun">Werke</span>
+            in <span class="hw" data-word="deutscher" data-trans="German" data-pos="Adjective">deutscher</span>
+            <span class="hw" data-word="Sprache" data-trans="Language" data-pos="Noun">Sprache</span>
+            und hat eine Geschichte, die über tausend Jahre
+            <span class="hw" data-word="zurückreicht" data-trans="Dates back" data-pos="Verb">zurückreicht</span>.
+          </p>
+          <br />
+          <p>
+            Sie ist bekannt für ihre
+            <span class="hw" data-word="Tiefe" data-trans="Depth" data-pos="Noun">Tiefe</span>,
+            ihren
+            <span class="hw" data-word="Reichtum" data-trans="Richness" data-pos="Noun">Reichtum</span>
+            an <span class="hw" data-word="Ideen" data-trans="Ideas" data-pos="Noun">Ideen</span>
+            und ihren nachhaltigen
+            <span class="hw" data-word="Einfluss" data-trans="Influence" data-pos="Noun">Einfluss</span>
+            auf die <span class="hw" data-word="Weltliteratur" data-trans="World literature" data-pos="Noun">Weltliteratur</span>.
+          </p>
+        </div>
+
+        <!-- The floating tooltip (absolutely positioned relative to demo-card) -->
+        <div class="demo-tooltip" id="demo-tooltip">
+          <div class="tt-header">
+            <span>DE</span>
+            <span class="tt-arrow">→</span>
+            <span>EN</span>
+          </div>
+          <div class="tt-body">
+            <span id="tt-translation">–</span>
+            <span class="tt-pos" id="tt-pos">–</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ── Features ────────────────────────────────────────────────────── -->
+<section class="features">
+  <p class="section-label" data-stagger>What makes it different</p>
+  <h2 class="section-title" data-stagger style="--delay:60ms">Built around the way you actually read.</h2>
+
+  <div class="features-grid">
+
+    <div class="feature-card" data-stagger style="--delay:0ms">
+      <div class="feature-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+        </svg>
+      </div>
+      <div class="feature-title">Zero friction</div>
+      <p class="feature-desc">No hotkey, no right-click, no copy-paste. The translation appears the moment your cursor touches a word. Move on — it disappears.</p>
+    </div>
+
+    <div class="feature-card" data-stagger style="--delay:80ms">
+      <div class="feature-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="3" width="20" height="14" rx="2"/>
+          <path d="M8 21h8M12 17v4"/>
+        </svg>
+      </div>
+      <div class="feature-title">On-device AI</div>
+      <p class="feature-desc">Uses Chrome's built-in Gemini Nano for private, offline-capable translation with no API keys needed. Falls back to cloud engines when needed.</p>
+    </div>
+
+    <div class="feature-card" data-stagger style="--delay:160ms">
+      <div class="feature-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/>
+        </svg>
+      </div>
+      <div class="feature-title">Grammar overlay</div>
+      <p class="feature-desc">Sentence mode color-codes each word by grammatical role — nouns, verbs, adjectives. Helps you absorb the grammar, not just the words.</p>
+    </div>
+
+    <div class="feature-card" data-stagger style="--delay:0ms">
+      <div class="feature-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+      </div>
+      <div class="feature-title">Smart detection</div>
+      <p class="feature-desc">Skips buttons, icons, menus, and UI elements — only triggers on actual readable text. You get translations where they make sense.</p>
+    </div>
+
+    <div class="feature-card" data-stagger style="--delay:80ms">
+      <div class="feature-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="2" y1="12" x2="22" y2="12"/>
+          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+        </svg>
+      </div>
+      <div class="feature-title">100+ languages</div>
+      <p class="feature-desc">Automatic source detection or manually fix a language pair. Works in both directions. Supports everything from Spanish to Japanese to Arabic.</p>
+    </div>
+
+    <div class="feature-card" data-stagger style="--delay:160ms">
+      <div class="feature-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        </svg>
+      </div>
+      <div class="feature-title">Your call, every site</div>
+      <p class="feature-desc">Toggle translation per domain with one click. Customize the tooltip: font, size, blur, border radius. Enable only when you want it.</p>
+    </div>
+
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ── How it works ─────────────────────────────────────────────────── -->
+<section class="how">
+  <p class="section-label" data-stagger>How it works</p>
+  <h2 class="section-title" data-stagger style="--delay:60ms">Up and running in two minutes.</h2>
+
+  <div class="steps">
+    <div class="step" data-stagger style="--delay:0ms">
+      <div class="step-num">1</div>
+      <div class="step-title">Install</div>
+      <p class="step-desc">Add the extension to Chrome from the Web Store. No account, no signup.</p>
+    </div>
+    <div class="step" data-stagger style="--delay:100ms">
+      <div class="step-num">2</div>
+      <div class="step-title">Set your language</div>
+      <p class="step-desc">Pick your target language once. Auto-detection handles the rest.</p>
+    </div>
+    <div class="step" data-stagger style="--delay:200ms">
+      <div class="step-num">3</div>
+      <div class="step-title">Browse normally</div>
+      <p class="step-desc">Visit any page with foreign text. Transover sits quietly in the background.</p>
+    </div>
+    <div class="step" data-stagger style="--delay:300ms">
+      <div class="step-num">4</div>
+      <div class="step-title">Hover to read</div>
+      <p class="step-desc">Point at any word or sentence. The translation appears instantly, then fades when you move on.</p>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ── Beta CTA ─────────────────────────────────────────────────────── -->
+<section class="beta" id="beta">
+  <div class="beta-card" data-stagger>
+    <p class="beta-eyebrow">Early access</p>
+    <h2 class="beta-title">Help shape Transover.</h2>
+    <p class="beta-sub">
+      The extension is in active development. Join the beta to get early access, report bugs, and directly influence what gets built next.
+    </p>
+    <a
+      class="beta-btn"
+      href="mailto:itssulaimann@gmail.com?subject=Transover%20Beta%20Tester%20Request&body=Hi%2C%0A%0AI%E2%80%99d%20like%20to%20join%20the%20Transover%20beta.%0A%0ABrowser%3A%20Chrome%20%28version%3A%20%29%0AOS%3A%20%0ALanguages%20I%20read%3A%20%0A%0AAnything%20specific%20I%E2%80%99d%20like%20to%20test%3A%20%0A"
+    >
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+        <polyline points="22,6 12,13 2,6"/>
+      </svg>
+      Request beta access
+    </a>
+    <p class="beta-note">Opens your email client — no forms, no data collection.</p>
+  </div>
+</section>
+
+<!-- ── Footer ───────────────────────────────────────────────────────── -->
+<footer>
+  <div class="footer-inner">
+    <a href="#" class="footer-logo">
+      <svg width="22" height="22" viewBox="0 0 75 75" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="75" height="75" rx="16" transform="matrix(-1 0 0 1 75 0)" fill="url(#footer_grad)"/>
+        <path d="M33.0231 39.7295L20.5578 34.8536C16.8943 33.4206 17.0495 28.1841 20.7912 26.9705L53.4845 16.3673C56.7372 15.3124 59.8145 18.3898 58.7596 21.6424L48.1564 54.3358C46.9428 58.0777 41.7063 58.2327 40.2734 54.5692L35.3974 42.1038C34.9717 41.0159 34.111 40.1552 33.0231 39.7295Z" fill="white" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M12.0677 42.7695L24.3374 47.7281C25.3904 48.1535 26.2254 48.9885 26.6508 50.0415L31.6094 62.3112" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <defs>
+          <linearGradient id="footer_grad" x1="0" y1="0" x2="75" y2="75" gradientUnits="userSpaceOnUse">
+            <stop offset="0.154" stop-color="#127F94"/>
+            <stop offset="0.788" stop-color="#06272E"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      <span class="footer-logo-name">Transover</span>
+    </a>
+    <span class="footer-copy">Chrome extension · Early beta · 2026</span>
+  </div>
+</footer>
+
+<script>
+  // ── Stagger entrance on scroll ─────────────────────────────────────
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      const el = entry.target;
+      const delay = el.style.getPropertyValue('--delay') || '0ms';
+      el.style.animationDelay = delay;
+      el.classList.add('in');
+      io.unobserve(el);
+    });
+  }, { threshold: 0.12 });
+
+  document.querySelectorAll('[data-stagger]').forEach(el => io.observe(el));
+
+  // ── Interactive demo tooltip ───────────────────────────────────────
+  const tooltip  = document.getElementById('demo-tooltip');
+  const ttText   = document.getElementById('tt-translation');
+  const ttPos    = document.getElementById('tt-pos');
+  const demoCard = tooltip.closest('.demo-card');
+  let hideTimer  = null;
+
+  function showTip(word, trans, pos, target) {
+    if (hideTimer) { clearTimeout(hideTimer); hideTimer = null; }
+
+    const cardRect   = demoCard.getBoundingClientRect();
+    const wordRect   = target.getBoundingClientRect();
+    const GAP = 10;
+
+    // Position relative to demo-card
+    let top  = wordRect.bottom - cardRect.top + GAP;
+    let left = wordRect.left   - cardRect.left;
+
+    ttText.textContent = trans;
+    ttPos.textContent  = pos;
+
+    // Reset state then measure
+    tooltip.style.display = 'block';
+    tooltip.classList.remove('hiding', 'visible');
+    void tooltip.offsetWidth; // force reflow
+
+    // Clamp left so tooltip stays within card
+    const cardW  = demoCard.offsetWidth;
+    const tipW   = tooltip.offsetWidth;
+    if (left + tipW > cardW - 12) left = cardW - tipW - 12;
+    if (left < 12) left = 12;
+
+    // If word is in the lower half, show above
+    const cardH = demoCard.offsetHeight;
+    const relBottom = wordRect.bottom - cardRect.top;
+    if (relBottom + GAP + tooltip.offsetHeight > cardH - 16) {
+      top = wordRect.top - cardRect.top - tooltip.offsetHeight - GAP;
+    }
+
+    tooltip.style.top  = top  + 'px';
+    tooltip.style.left = left + 'px';
+    tooltip.classList.add('visible');
+  }
+
+  function hideTip() {
+    tooltip.classList.remove('visible');
+    tooltip.classList.add('hiding');
+    hideTimer = setTimeout(() => {
+      tooltip.style.display = 'none';
+      tooltip.classList.remove('hiding');
+      hideTimer = null;
+    }, 140);
+  }
+
+  document.querySelectorAll('.hw').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      showTip(el.dataset.word, el.dataset.trans, el.dataset.pos, el);
+    });
+    el.addEventListener('mouseleave', hideTip);
+  });
+</script>
+</body>
+</html>
