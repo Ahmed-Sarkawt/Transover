@@ -1,12 +1,7 @@
 .claude/
-src/
 dist/
 node_modules/
 dist.zip
-*.config.ts
-tsconfig.json
-package.json
-package-lock.json
 
 # OS
 .DS_Store
@@ -24,4 +19,3 @@ npm-debug.log*
 
 # TypeScript
 *.tsbuildinfo
-CLAUDE.md
