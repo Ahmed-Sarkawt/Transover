@@ -3,6 +3,15 @@ dist/
 node_modules/
 dist.zip
 
+# Source (closed-source; only landing page is public)
+src/
+CLAUDE.md
+package.json
+package-lock.json
+tsconfig.json
+vite.content.config.ts
+vite.popup.config.ts
+
 # OS
 .DS_Store
 Thumbs.db
