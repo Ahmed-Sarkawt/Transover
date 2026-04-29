@@ -1,5 +1,7 @@
 # Transover — Hover Translator
 
+**[Live site](https://ahmed-sarkawt.github.io/Transover/)** · [Releases](https://github.com/Ahmed-Sarkawt/Transover/releases/latest)
+
 A Chrome extension that translates text as you hover over it. No clicking, no copying — just point and read.
 
 ## What it does
@@ -18,8 +20,9 @@ Hover your mouse over any word or sentence on any webpage and a tooltip instantl
 - **Skip form fields** — optionally disable translation inside inputs and textareas
 - **Pin tooltip** — keep the tooltip open with `Alt+P`
 - **Multiple engines** — Chrome AI (on-device), MyMemory, Lingva, LibreTranslate, DeepL
-- **Per-site control** — enable or disable on any specific site
-- **Customizable appearance** — font size, max width, hide delay, light/dark theme
+- **Four activation modes** — Always on / Language filter / On demand (hold Alt) / Off
+- **Per-site overrides** — enable or disable on any domain, independent of the global mode
+- **Customizable appearance** — font size, max width, hover delay, hide delay, border radius, blur, light/dark theme
 
 ## How to install
 
@@ -34,9 +37,9 @@ Hover your mouse over any word or sentence on any webpage and a tooltip instantl
 | Action | Result |
 |---|---|
 | Hover over text | Translates the word or sentence |
-| Hold `Alt` | On-demand translate (when auto-translate is off) |
+| Hold `Alt` | On-demand translate (when mode is set to On demand) |
 | Select text + release | Translates the selection |
 | `Alt+P` | Pin / unpin the tooltip |
 | `Esc` | Dismiss pinned tooltip |
 
-Click the extension icon to open settings and configure languages, engine, and appearance.
+Click the extension icon to open settings and configure languages, engine, activation mode, and appearance.
